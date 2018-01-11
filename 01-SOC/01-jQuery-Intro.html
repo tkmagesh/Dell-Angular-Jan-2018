@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>JQuery Introduction</title>
+	<script src="jquery-3.2.1.js"></script>
+	<script>
+		$(function(){
+			$('#btnAdd').click(function(){
+				var n1 = parseInt($('#txtNumber1').val());
+				var n2 = parseInt($('#txtNumber2').val());
+				var result = n1 + n2;
+				$('#divResult').html(result);
+			});
+		});
+
+	</script>
+</head>
+<body>
+	<input type="number" id="txtNumber1">
+	<input type="number" id="txtNumber2">
+	<input type="button" value="Add" id="btnAdd">
+	<div id="divResult">[Result]</div>
+</body>
+</html>
