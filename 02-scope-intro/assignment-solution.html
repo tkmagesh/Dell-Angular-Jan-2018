@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Salary Calculator</title>
+	<style>
+		.field{
+			margin-bottom: 10px;
+		}
+		label{
+			display: block;
+		}
+		#divResult{
+			color : red;
+			font-size: 22pt;
+		}
+		body{
+			margin-left: 50px;
+		}
+	</style>
+	<script src="angular.js"></script>
+	<script>
+
+
+		String.prototype.toInt = function() {
+			return parseInt(this, 10);
+		};
+
+		//state * behavior of a calculator
+		//Model
+		function Calculator(){
+			this.n1 = 0;
+			this.n2 = 0;
+			this.result = 0;
+		}
+		Calculator.prototype.add = function() {
+			this.result = this.n1 + this.n2;
+		};
+		Calculator.prototype.subtract = function() {
+			this.result = this.n1 - this.n2;
+		};
+		Calculator.prototype.multiply = function() {
+			this.result = this.n1 * this.n2;
+		};
+		Calculator.prototype.divide = function() {
+			this.result = this.n1 / this.n2;
+		};
+
+		
+		//View
+		
+		angular
+			.module('myApp', [])
+			.controller('calculatorController', function($scope){
+				$scope.calculator = new Calculator();
+				$scope.operator = '';
+				$scope.calculate = function(){
+					switch($scope.operator){
+						case 'add':
+							$scope.calculator.add();
+							break;
+						case 'subtract':
+							$scope.calculator.subtract();
+							break;
+						case 'multiply':
+							$scope.calculator.multiply();
+							break;
+						case 'divide':
+							$scope.calculator.divide();
+							break;
+					}
+				}
+			});
+	</script>
+</head>
+<body ng-app="myApp" >
+	<div ng-controller="calculatorController">
+		<h2>Calculator - 2</h2>
+		<input type="number" ng-model="calculator.n1">
+		<select ng-model="operator">
+			<option value="add">Add</option>
+			<option value="subtract">Subtract</option>
+			<option value="multiply">Multiply</option>
+			<option value="divide">Divide</option>
+		</select>
+		<input type="number" ng-model="calculator.n2">
+		<input type="button" value="Calculate" ng-click="calculate()">
+		<div ng-bind="calculator.result"></div>
+	<div>
+</body>
+</html>
