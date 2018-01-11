@@ -1,0 +1,27 @@
+function SalaryCalculator(){
+	//state
+	this.basic = 0;
+	this.hra = 0;
+	this.da = 0;
+	this.tax = 0;
+	this.salary = 0;
+}
+//behavior
+SalaryCalculator.prototype.calculate = function() {
+	var gross = this.basic + this.hra + this.da;
+	var net = gross * ((100-this.tax)/100);
+	this.salary = net;
+};
+
+
+<h2>Calculator - 2</h2>
+<input type="number">
+<select>
+	<option value="add">Add</option>
+	<option value="subtract">Subtract</option>
+	<option value="multiply">Multiply</option>
+	<option value="divide">Divide</option>
+</select>
+<input type="number">
+<input type="button" value="Calculate">
+<div>[Result]</div>
