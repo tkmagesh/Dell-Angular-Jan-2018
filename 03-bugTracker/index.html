@@ -45,8 +45,27 @@
 		(done) 5. Display statistics ( # of closed bugs / total # of bugs )
 		(done) 6. Search for the bugs
 		(done) 7. Sort the bugs
-		8. Improve the bug display
+		(done) 8. Improve the bug display
 		9. Persist the bugs in the localStorage
+			window.localStorage
+			====================
+			- key/value store
+			- key has to be unique
+				(hint : use a unique id for each bug)
+			- both key and value must be strings
+				(hint : use angular.toJSON() and angular.fromJSON() for serialization and deserialization respectively)
+			- follows 'Same Origin Policy'
+			- ~10MB storage limit
+			- apis
+			------
+				* setItem(key, value)
+				* getItem(key) => value
+				* removeItem(key)
+				* clear()
+				* key(index) => key at index
+				* length
+
+
 		10. Display 'created At' for each bug
 		11. Persist the bugs in the server
 		12. Make the bugs accessible using unique urls (routing)
@@ -75,10 +94,7 @@
 		myApp.controller('bugsController', function($scope, bugOperations){
 			
 			$scope.bugs = [
-				bugOperations.createNew('Server communication failure'),
-				bugOperations.createNew('Data integrity checks failed'),
-				bugOperations.createNew('User actions not recognized'),
-				bugOperations.createNew('Application not responding'),
+				
 			];
 
 			$scope.onCreateNewClick = function(bugName){
