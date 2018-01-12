@@ -66,11 +66,12 @@
 				* length
 
 
-		10. Display 'created At' for each bug
+		(done) 10. Display 'created At' for each bug
 		11. Persist the bugs in the server
 		12. Make the bugs accessible using unique urls (routing)
 	</script>
 	<script src="angular.js"></script>
+	<script src="moment.js"></script>
 	<script>
 		var myApp = angular.module('myApp', []);
 
@@ -80,7 +81,8 @@
 					var newBug = {
 						id : id,
 						name : bugName || defaultBugName,
-						isClosed : false
+						isClosed : false,
+						createdAt : new Date()
 					};
 					return newBug;
 				},
@@ -196,13 +198,19 @@
 			};
 		});*/
 
-		myApp.filter('closedCount', function(){
+		/*myApp.filter('closedCount', function(){
 			return function(bugs){
 				return bugs.reduce(function(prevResult, bug){
 					return bug.isClosed ? ++prevResult : prevResult;
 				}, 0);
 			};
-		});
+		});*/
+
+		myApp.filter('closedCount', () => 
+			(bugs) => bugs.reduce((prevResult, bug) => bug.isClosed ? ++prevResult : prevResult, 0)
+		);
+
+		myApp.filter('elapsed', () => data => moment(data).fromNow());
 
 	</script>
 </head>
@@ -246,7 +254,7 @@
 						ng-class="{closed : bug.isClosed}"
 						title = "{{bug.name}}"
 					>{{bug.name | trimText:30}}</span>
-					<div class="datetime">[Created At]</div>
+					<div class="datetime">[{{bug.createdAt | elapsed}}]</div>
 				</li>
 			</ol>
 			<input type="button" value="Remove Closed" ng-click="onRemoveClosedClick()">
