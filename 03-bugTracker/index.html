@@ -34,6 +34,16 @@
 			border-radius: 5px;
 			margin-bottom: 10px;
 		}
+
+		.myDiv{
+			display: block;
+		    font-size: 2em;
+		    -webkit-margin-before: 0.67em;
+		    -webkit-margin-after: 0.67em;
+		    -webkit-margin-start: 0px;
+		    -webkit-margin-end: 0px;
+		    font-weight: bold;
+		}
 	</style>
 	<script type="text/x-usecases">
 		(done) 1. Add new bugs
@@ -55,12 +65,17 @@
 		myApp.controller('bugsController', function($scope){
 			$scope.bugs = [];
 
-			$scope.newBugName = '';
-
-			$scope.onCreateNewClick = function(){
-				$scope.bugs.push($scope.newBugName);
+			$scope.onCreateNewClick = function(bugName){
+				var newBug = {
+					name : bugName,
+					isClosed : false
+				};
+				$scope.bugs.push(newBug);
 			};
 
+			$scope.onBugClick = function(bugToToggle){
+				bugToToggle.isClosed = !bugToToggle.isClosed;
+			};
 		});
 	</script>
 </head>
@@ -91,16 +106,12 @@
 		<section class="edit">
 			<label for="">Bug Name : </label>
 			<input type="text" ng-model="newBugName">
-			<input type="button" value="Create New" ng-click="onCreateNewClick()">
+			<input type="button" value="Create New" ng-click="onCreateNewClick(newBugName)">
 		</section>
 		<section class="list">
 			<ol>
-				<li>
-					<span class="bugname">[This is bug - 1]</span>
-					<div class="datetime">[Created At]</div>
-				</li>
-				<li>
-					<span class="bugname closed">[This is bug - 2]</span>
+				<li ng-repeat="bug in bugs track by $index">
+					<span class="bugname" ng-click="onBugClick(bug)">{{bug}}</span>
 					<div class="datetime">[Created At]</div>
 				</li>
 			</ol>
