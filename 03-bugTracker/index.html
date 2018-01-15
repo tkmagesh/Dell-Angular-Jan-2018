@@ -79,7 +79,7 @@
 			window.$http = $http;
 		});
 
-		myApp.factory('bugOperations',  function(defaultBugName){
+		/*myApp.factory('bugOperations',  function(defaultBugName){
 			return {
 				createNew : function(bugName, id){
 					var newBug = {
@@ -94,6 +94,23 @@
 					bugToToggle.isClosed = !bugToToggle.isClosed
 				}
 			};
+		});*/
+
+		myApp.service('bugOperations',  function(defaultBugName){
+			
+			this.createNew = function(bugName, id){
+				var newBug = {
+					id : id,
+					name : bugName || defaultBugName,
+					isClosed : false,
+					createdAt : new Date()
+				};
+				return newBug;
+			};
+			this.toggle = function(bugToToggle){
+				bugToToggle.isClosed = !bugToToggle.isClosed
+			}
+			
 		});
 
 		myApp.value('defaultBugName', '[Dummy Bug]');
@@ -141,42 +158,100 @@
 			}
 		});
 
-		myApp.controller('bugsController', function($scope, $http, bugOperations){
+		myApp.factory('bugServer', function(bugOperations, $http, $q){
+			function getAll(){
+				/*var p = $http.get('http://localhost:3000/bugs')
+				var p2 = p.then(function(response){
+					return response.data;
+				});
+				return p2;*/
+
+				/*return $http
+					.get('http://localhost:3000/bugs')
+					.then(function(response){
+						return response.data;
+					});*/
+
+				var deferred = $q.defer();
+				$http
+					.get('http://localhost:3000/bugs')
+					.then(function(response){
+						deferred.resolve(response.data);
+					});
+				return deferred.promise;
+			}
+			function addNew(bugName){
+				var newBug = bugOperations.createNew(bugName, 0);
+				/*var p = $http.post('http://localhost:3000/bugs', newBug);
+				var p2 = p.then(function(response){
+					var newBug = response.data;
+					return newBug;
+				});
+				return p2;*/
+				return $http
+					.post('http://localhost:3000/bugs', newBug)
+					.then(function(response){
+						return response.data;
+					});
+			}
+			function toggle(bugToToggle){
+				bugOperations.toggle(bugToToggle);
+				return $http
+					.put('http://localhost:3000/bugs/' + bugToToggle.id, bugToToggle)
+					.then(function(response){
+						return response.data;
+					});
+			}
+			function remove(bug){
+				return $http
+					.delete('http://localhost:3000/bugs/' + bug.id)
+					.then(function(response){
+						return response.data;
+					});
+			}
+			return {
+				getAll : getAll,
+				addNew : addNew,
+				toggle : toggle,
+				remove : remove
+			};
+		});
+
+		myApp.controller('bugsController', function($scope, bugServer, $timeout){
 			
 			$scope.bugs = [];
-
-			var p = $http.get('http://localhost:3000/bugs')
-			p.then(function(response){
-				$scope.bugs = response.data;
-			});
+			
+			bugServer
+				.getAll()
+				.then(function(bugs){
+					$scope.bugs = bugs;
+				})
 
 			$scope.onCreateNewClick = function(bugName){
-				var newBug = bugOperations.createNew(bugName, 0);
-				var p = $http.post('http://localhost:3000/bugs', newBug);
-				p.then(function(response){
-					var newBug = response.data;
-					$scope.bugs.push(newBug);	
-				})
+				bugServer
+					.addNew(bugName)
+					.then(function(newBug){
+						$scope.bugs.push(newBug);
+					})
 				
 			};
 
 			$scope.onBugClick = function(bugToToggle){
-				bugOperations.toggle(bugToToggle);
-				$http.put('http://localhost:3000/bugs/' + bugToToggle.id, bugToToggle);
+				bugServer.toggle(bugToToggle);
 			};
 
 			$scope.onRemoveClosedClick = function(){
 				for(var index = $scope.bugs.length-1; index >= 0; index--){
 					if ($scope.bugs[index].isClosed){
-						$http.delete('http://localhost:3000/bugs/' + $scope.bugs[index].id);
+						bugServer.remove($scope.bugs[index]);
 						$scope.bugs.splice(index, 1);
 					}
 				}
 			};
 
-
-
 		});
+
+		
 
 		myApp.value('defaultTrimLength', 40);
 
@@ -233,6 +308,7 @@
 	<h1>Bug Tracker</h1>
 	<hr>
 	<div ng-controller="bugsController">
+		<h3>{{currentTime}}</h3>
 		<section class="stats">
 			<span class="closed">{{bugs | closedCount}}</span>
 			<!-- <span class="closed">{{ (bugs | filter:{isClosed : true}).length }}</span> -->
