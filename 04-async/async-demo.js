@@ -52,9 +52,24 @@ var demo = (function(){
 		}
 	})();
 
+	function addAsyncPromise(x,y){
+		console.log('	[@Service] processing ', x , ' and ', y);
+
+		var promiseObj = new Promise(function(resolveFn, rejectFn){
+			setTimeout(function(){
+				var result = x + y;
+				console.log('	[@Service] returning result');
+				resolveFn(result);
+			}, 4000);
+		});
+
+		return promiseObj;
+	}
 	return {
 		addSyncClient : addSyncClient,
 		addAsyncClient : addAsyncClient,
-		addAsyncEvents : addAsyncEvents
+		addAsyncEvents : addAsyncEvents,
+		addAsyncPromise : addAsyncPromise
 	}
+
 })();
