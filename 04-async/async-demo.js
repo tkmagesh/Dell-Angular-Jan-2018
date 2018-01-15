@@ -30,8 +30,31 @@ var demo = (function(){
 		
 	}
 
+	var addAsyncEvents = (function(){
+		var _callbacks = [];
+		function subscribe(callback){
+			if (typeof callback === 'function')
+				_callbacks.push(callback);
+		}
+		function process(x,y){
+			console.log('	[@Service] processing ', x , ' and ', y);
+			setTimeout(function(){
+				var result = x + y;
+				console.log('	[@Service] returning result');
+				_callbacks.forEach(function(callback){
+					callback(result);
+				});
+			}, 4000);
+		}
+		return {
+			subscribe : subscribe,
+			process : process
+		}
+	})();
+
 	return {
 		addSyncClient : addSyncClient,
-		addAsyncClient : addAsyncClient
+		addAsyncClient : addAsyncClient,
+		addAsyncEvents : addAsyncEvents
 	}
 })();
