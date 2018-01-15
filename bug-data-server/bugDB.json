@@ -1,22 +1,16 @@
 {
   "bugs": [
     {
-      "id": 1,
-      "name": "Unable to create a new bug",
-      "isClosed": false,
-      "createdAt": "2017-11-22T06:35:08.207Z"
-    },
-    {
-      "id": 3,
-      "name": "another new bug",
-      "isClosed": false,
-      "createdAt": "2017-12-07T09:53:50.992Z"
-    },
-    {
       "id": 4,
       "name": "routing is not routing",
       "isClosed": false,
       "createdAt": "2017-12-30T10:52:32.027Z"
+    },
+    {
+      "id": 5,
+      "name": "Server communication failure",
+      "isClosed": false,
+      "createdAt": "2018-01-15T06:41:37.113Z"
     }
   ],
   "projects": [

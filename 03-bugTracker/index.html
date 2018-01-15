@@ -75,6 +75,10 @@
 	<script>
 		var myApp = angular.module('myApp', []);
 
+		myApp.run(function($http){
+			window.$http = $http;
+		});
+
 		myApp.factory('bugOperations',  function(defaultBugName){
 			return {
 				createNew : function(bugName, id){
@@ -137,23 +141,34 @@
 			}
 		});
 
-		myApp.controller('bugsController', function($scope, bugStorage){
+		myApp.controller('bugsController', function($scope, $http, bugOperations){
 			
-			$scope.bugs = bugStorage.getAll();
+			$scope.bugs = [];
+
+			var p = $http.get('http://localhost:3000/bugs')
+			p.then(function(response){
+				$scope.bugs = response.data;
+			});
 
 			$scope.onCreateNewClick = function(bugName){
-				var newBug = bugStorage.addNew(bugName);
-				$scope.bugs.push(newBug);
+				var newBug = bugOperations.createNew(bugName, 0);
+				var p = $http.post('http://localhost:3000/bugs', newBug);
+				p.then(function(response){
+					var newBug = response.data;
+					$scope.bugs.push(newBug);	
+				})
+				
 			};
 
 			$scope.onBugClick = function(bugToToggle){
-				bugStorage.toggle(bugToToggle);
+				bugOperations.toggle(bugToToggle);
+				$http.put('http://localhost:3000/bugs/' + bugToToggle.id, bugToToggle);
 			};
 
 			$scope.onRemoveClosedClick = function(){
 				for(var index = $scope.bugs.length-1; index >= 0; index--){
 					if ($scope.bugs[index].isClosed){
-						bugStorage.remove($scope.bugs[index]);
+						$http.delete('http://localhost:3000/bugs/' + $scope.bugs[index].id);
 						$scope.bugs.splice(index, 1);
 					}
 				}
