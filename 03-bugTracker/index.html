@@ -72,9 +72,65 @@
 	</script>
 	<script src="angular.js"></script>
 	<script src="moment.js"></script>
+	<script src="utilsModule.js"></script>
 	<script>
-		var myApp = angular.module('myApp', []);
+		var myApp = angular.module('myApp', ["utils"]);
 
+		myApp.constant('defaultBaseUrl', 'http://localhost:3000/bugs/');
+
+		myApp.provider('bugServer', function(defaultBaseUrl){
+
+			var baseUrl = defaultBaseUrl;
+
+			function bugServerFactory(bugOperations, $http, $q){
+				function getAll(){
+					return $http
+						.get(baseUrl)
+						.then(response => response.data);
+					
+				}
+				function addNew(bugName){
+					var newBug = bugOperations.createNew(bugName, 0);
+					return $http
+						.post(baseUrl, newBug)
+						.then(response => response.data);
+				}
+				function toggle(bugToToggle){
+					bugOperations.toggle(bugToToggle);
+					return $http
+						.put(baseUrl + bugToToggle.id, bugToToggle)
+						.then(response => response.data);
+				}
+				function remove(bug){
+					return $http
+						.delete(baseUrl + bug.id)
+						.then(response => response.data);
+				}
+				return {
+					getAll : getAll,
+					addNew : addNew,
+					toggle : toggle,
+					remove : remove
+				};
+			}
+			return {
+				$get : bugServerFactory,
+				setBaseUrl : function(_baseUrl){
+					baseUrl = _baseUrl;
+				}
+			}
+		});
+
+		myApp.config(function(bugServerProvider, bugOperationsProvider){
+			console.log('bugOperationsProvider -> ', bugOperationsProvider);
+			bugServerProvider.setBaseUrl('http://localhost:3300/bugs/');
+		});
+
+		
+
+		myApp.run(function(){
+			
+		});
 		
 		/*myApp.factory('bugOperations',  function(defaultBugName){
 			return {
@@ -113,7 +169,7 @@
 		myApp.value('defaultBugName', '[Dummy Bug]');
 
 		myApp.factory('bugStorage', function(bugOperations, $window){
-
+			
 			var storage = $window.localStorage;
 			var currentBugId = 0;
 			function getAll(){
@@ -197,37 +253,7 @@
 			};
 		});*/
 
-		myApp.factory('bugServer', function(bugOperations, $http, $q){
-			function getAll(){
-				return $http
-					.get('http://localhost:3000/bugs')
-					.then(response => response.data);
-				
-			}
-			function addNew(bugName){
-				var newBug = bugOperations.createNew(bugName, 0);
-				return $http
-					.post('http://localhost:3000/bugs', newBug)
-					.then(response => response.data);
-			}
-			function toggle(bugToToggle){
-				bugOperations.toggle(bugToToggle);
-				return $http
-					.put('http://localhost:3000/bugs/' + bugToToggle.id, bugToToggle)
-					.then(response => response.data);
-			}
-			function remove(bug){
-				return $http
-					.delete('http://localhost:3000/bugs/' + bug.id)
-					.then(response => response.data);
-			}
-			return {
-				getAll : getAll,
-				addNew : addNew,
-				toggle : toggle,
-				remove : remove
-			};
-		});
+		
 
 		myApp.controller('bugsController', function($scope, bugServer, $timeout){
 			
@@ -276,14 +302,7 @@
 
 		
 
-		myApp.value('defaultTrimLength', 40);
-
-		myApp.filter('trimText', function(defaultTrimLength){
-			return function(data, trimLength){
-				trimLength = trimLength || defaultTrimLength;
-				return data.length < trimLength ? data : data.substr(0, trimLength) + '...';
-			}
-		});
+		
 
 		/*myApp.filter('closedCount', function(){
 			return function(bugs){
@@ -323,7 +342,7 @@
 			(bugs) => bugs.reduce((prevResult, bug) => bug.isClosed ? ++prevResult : prevResult, 0)
 		);
 
-		myApp.filter('elapsed', () => data => moment(data).fromNow());
+		
 
 	</script>
 </head>
