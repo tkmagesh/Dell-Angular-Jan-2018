@@ -75,10 +75,7 @@
 	<script>
 		var myApp = angular.module('myApp', []);
 
-		myApp.run(function($http){
-			window.$http = $http;
-		});
-
+		
 		/*myApp.factory('bugOperations',  function(defaultBugName){
 			return {
 				createNew : function(bugName, id){
@@ -158,20 +155,9 @@
 			}
 		});
 
-		myApp.factory('bugServer', function(bugOperations, $http, $q){
+		/*myApp.factory('bugServer', function(bugOperations, $http, $q){
 			function getAll(){
-				/*var p = $http.get('http://localhost:3000/bugs')
-				var p2 = p.then(function(response){
-					return response.data;
-				});
-				return p2;*/
-
-				/*return $http
-					.get('http://localhost:3000/bugs')
-					.then(function(response){
-						return response.data;
-					});*/
-
+				
 				var deferred = $q.defer();
 				$http
 					.get('http://localhost:3000/bugs')
@@ -182,12 +168,6 @@
 			}
 			function addNew(bugName){
 				var newBug = bugOperations.createNew(bugName, 0);
-				/*var p = $http.post('http://localhost:3000/bugs', newBug);
-				var p2 = p.then(function(response){
-					var newBug = response.data;
-					return newBug;
-				});
-				return p2;*/
 				return $http
 					.post('http://localhost:3000/bugs', newBug)
 					.then(function(response){
@@ -215,6 +195,38 @@
 				toggle : toggle,
 				remove : remove
 			};
+		});*/
+
+		myApp.factory('bugServer', function(bugOperations, $http, $q){
+			function getAll(){
+				return $http
+					.get('http://localhost:3000/bugs')
+					.then(response => response.data);
+				
+			}
+			function addNew(bugName){
+				var newBug = bugOperations.createNew(bugName, 0);
+				return $http
+					.post('http://localhost:3000/bugs', newBug)
+					.then(response => response.data);
+			}
+			function toggle(bugToToggle){
+				bugOperations.toggle(bugToToggle);
+				return $http
+					.put('http://localhost:3000/bugs/' + bugToToggle.id, bugToToggle)
+					.then(response => response.data);
+			}
+			function remove(bug){
+				return $http
+					.delete('http://localhost:3000/bugs/' + bug.id)
+					.then(response => response.data);
+			}
+			return {
+				getAll : getAll,
+				addNew : addNew,
+				toggle : toggle,
+				remove : remove
+			};
 		});
 
 		myApp.controller('bugsController', function($scope, bugServer, $timeout){
@@ -223,16 +235,13 @@
 			
 			bugServer
 				.getAll()
-				.then(function(bugs){
-					$scope.bugs = bugs;
-				})
+				.then(bugs => $scope.bugs = bugs);
 
 			$scope.onCreateNewClick = function(bugName){
 				bugServer
 					.addNew(bugName)
-					.then(function(newBug){
-						$scope.bugs.push(newBug);
-					})
+					.then(newBug => $scope.bugs.push(newBug));
+					
 				
 			};
 
@@ -241,10 +250,24 @@
 			};
 
 			$scope.onRemoveClosedClick = function(){
-				for(var index = $scope.bugs.length-1; index >= 0; index--){
+				/*for(var index = $scope.bugs.length-1; index >= 0; index--){
 					if ($scope.bugs[index].isClosed){
-						bugServer.remove($scope.bugs[index]);
-						$scope.bugs.splice(index, 1);
+						bugServer
+							.remove($scope.bugs[index])
+							.then((function(i){
+								return function(){
+									$scope.bugs.splice(i, 1);		
+								}
+							})(index))
+						
+					}
+				}*/
+
+				for(let index = $scope.bugs.length-1; index >= 0; index--){
+					if ($scope.bugs[index].isClosed){
+						bugServer
+							.remove($scope.bugs[index])
+							.then(() => $scope.bugs.splice(index, 1));
 					}
 				}
 			};

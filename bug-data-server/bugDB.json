@@ -1,22 +1,16 @@
 {
   "bugs": [
     {
-      "id": 4,
-      "name": "routing is not routing",
+      "id": 10,
+      "name": "Bug - 2",
       "isClosed": false,
-      "createdAt": "2017-12-30T10:52:32.027Z"
+      "createdAt": "2018-01-15T10:42:58.601Z"
     },
     {
-      "id": 5,
-      "name": "Server communication failure",
+      "id": 11,
+      "name": "Bug - 5",
       "isClosed": false,
-      "createdAt": "2018-01-15T06:41:37.113Z"
-    },
-    {
-      "id": 6,
-      "name": "factory vs service",
-      "isClosed": true,
-      "createdAt": "2018-01-15T10:00:00.232Z"
+      "createdAt": "2018-01-15T10:43:01.103Z"
     }
   ],
   "projects": [
