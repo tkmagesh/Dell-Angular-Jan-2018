@@ -13,6 +13,10 @@
 			$scope.onMessageReset = function(){
 				$scope.msg = '[message reset]';				
 			};
+
+			$scope.emp = {
+				name : 'Magesh'
+			};
 		});
 		/*myApp.directive('greeter', function(){
 
@@ -40,6 +44,10 @@
 
 		myApp.directive('greeter', function(){
 			return {
+				restrict : 'EA',
+				controller : function(){
+					
+				}
 				template : `
 					<div>
 						<label for="">Name :</label>
@@ -51,7 +59,9 @@
 				`,
 				scope : {
 					message : '=' ,
-					clearMessage : '&'
+					clearMessage : '&',
+					username : '@',
+					emp : '<'
 				},
 				link : function($scope, $element, $attr){
 					
@@ -70,7 +80,7 @@
 	<div ng-controller="appController">
 		<div>{{msg}}</div>
 		<hr/>
-		<greeter message="msg" clear-message="onMessageReset()"></greeter>
+		<greeter message="msg" clear-message="onMessageReset()" emp="emp"></greeter>
 		<hr/>
 	</div>
 </body>
