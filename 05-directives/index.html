@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Directives</title>
+	<script src="jquery-3.2.1.js"></script>
+	<script src="angular.js"></script>
+	<script>
+		var myApp = angular.module('myApp', []);
+		myApp.controller('appController', function($scope){
+			
+		});
+		myApp.directive('greeter', function(){
+
+			var template = `
+				<div>
+					<label for="">Name :</label>
+					<input type="text" name="" id="txtName">
+					<input type="button" value="Greet" id="btnGreet">
+					<div id="divMessage"></div>
+				</div>
+			`;
+			return function($scope, $element, $attr){
+				$element.html(template);
+				$element
+					.find('#btnGreet')
+					.click(function(){
+						console.log('greet button clicked');
+						var name = $element.find('#txtName').val();
+						var msg = 'Hi ' + name + ', Have a nice day!';
+						$element.find('#divMessage').html(msg);
+					});
+			};
+			
+		});
+
+		myApp.directive('greeter', function(){
+			return {
+				template : `
+					<div>
+						<label for="">Name :</label>
+						<input type="text" name="" id="txtName" ng-model="username">
+						<input type="button" value="Greet" id="btnGreet" ng-click="greet()">
+						<div id="divMessage">{{message}}</div>
+					</div>
+				`,
+				link : function($scope, $element, $attr){
+					$scope.message = '';
+					$scope.greet = function(){
+						var msg = 'Hi ' + $scope.username + ', Have a nice day!';
+						$scope.message = msg;
+					}
+				}
+
+			}
+		})
+	</script>
+</head>
+<body ng-app="myApp">
+
+	<div ng-controller="appController">
+		<greeter></greeter>
+	</div>
+</body>
+</html>
